@@ -31,7 +31,7 @@ class TradingDirector:
         Handle the data event
         """
         print(
-            f"[{event.data.name}] - Data event received for symbol: {event.symbol} - Last close price: {event.data.close}"
+            f"[{event.data.name}] - Data event received for symbol: {event.symbol} - Last close price: {event.data.close}"  # type: ignore
         )
 
     def execute(self) -> None:
