@@ -83,24 +83,23 @@ class DataProvider:
 
                 # Return empty series
                 return pd.Series()  # type: ignore
-            else:
-                bars = pd.DataFrame(bars_np_array)  # type: ignore
-                # Convert the time column to datetime format
-                bars["time"] = pd.to_datetime(bars["time"], unit="s")
-                bars.set_index("time", inplace=True)
 
-                # Change col names and reorganize
-                bars.rename(
-                    columns={"tick_volume": "tickvol", "real_volume": "vol"},
-                    inplace=True,
-                )
-                bars = bars[
-                    ["open", "high", "low", "close", "tickvol", "vol", "spread"]
-                ]
+            bars = pd.DataFrame(bars_np_array)  # type: ignore
+            # Convert the time column to datetime format
+            bars["time"] = pd.to_datetime(bars["time"], unit="s")
+            bars.set_index("time", inplace=True)
+
+            # Change col names and reorganize
+            bars.rename(
+                columns={"tick_volume": "tickvol", "real_volume": "vol"},
+                inplace=True,
+            )
+            bars = bars[["open", "high", "low", "close", "tickvol", "vol", "spread"]]
         except Exception as e:
             print(
                 f"Unable to retrieve the last candle data from {symbol} {timeframe} - MT5 Error: {mt5.last_error()}, exception: {e}"  # type: ignore
             )
+            return pd.Series()  # type: ignore
         else:
             if bars.empty:
                 # Return empty series
@@ -139,20 +138,18 @@ class DataProvider:
 
                 # Return empty DataFrame
                 return pd.DataFrame()
-            else:
-                bars = pd.DataFrame(bars_np_array)  # type: ignore
-                # Convert the time column to datetime format
-                bars["time"] = pd.to_datetime(bars["time"], unit="s")
-                bars.set_index("time", inplace=True)
 
-                # Change col names and reorganize
-                bars.rename(
-                    columns={"tick_volume": "tickvol", "real_volume": "vol"},
-                    inplace=True,
-                )
-                bars = bars[
-                    ["open", "high", "low", "close", "tickvol", "vol", "spread"]
-                ]
+            bars = pd.DataFrame(bars_np_array)  # type: ignore
+            # Convert the time column to datetime format
+            bars["time"] = pd.to_datetime(bars["time"], unit="s")
+            bars.set_index("time", inplace=True)
+
+            # Change col names and reorganize
+            bars.rename(
+                columns={"tick_volume": "tickvol", "real_volume": "vol"},
+                inplace=True,
+            )
+            bars = bars[["open", "high", "low", "close", "tickvol", "vol", "spread"]]
         except Exception as e:
             print(
                 f"Unable to retrieve the last {num_bars} candles data from {symbol} {timeframe} - MT5 Error: {mt5.last_error()}, exception: {e}"  # type: ignore
@@ -162,9 +159,8 @@ class DataProvider:
             if bars.empty:
                 # Return empty DataFrame
                 return pd.DataFrame()
-            else:
-                # If everything ok, return the datarame with eh num_bars
-                return bars
+            # If everything ok, return the datarame with eh num_bars
+            return bars
 
     def get_latest_tick(self, symbol: str) -> Dict[str, Union[int, float]]:
         """
