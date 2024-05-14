@@ -1,11 +1,27 @@
 from enum import StrEnum
+from decimal import Decimal
+
 import pandas as pd
 from pydantic import BaseModel
+# from pandera.typing import Series
 
 
 # Definition of the different type of events
 class EventType(StrEnum):
     DATA = "DATA"
+    SIGNAL = "SIGNAL"
+
+
+class SignalType(StrEnum):
+    BUY = "BUY"
+    SELL = "SELL"
+
+
+class OrderType(StrEnum):
+    MARKET = "MARKET"
+    LIMIT = "LIMIT"
+    STOP = "STOP"
+    STOP_LIMIT = "STOP_LIMIT"
 
 
 class BaseEvent(BaseModel):
@@ -18,4 +34,15 @@ class BaseEvent(BaseModel):
 class DataEvent(BaseEvent):
     event_type: EventType = EventType.DATA
     symbol: str
-    data: pd.Series
+    data: pd.Series  # type: ignore
+
+
+class SignalEvent(BaseEvent):
+    event_type: EventType = EventType.SIGNAL
+    symbol: str
+    signal: SignalType
+    target_order: OrderType
+    target_price: Decimal
+    magic_number: int
+    sl: Decimal
+    tp: Decimal
