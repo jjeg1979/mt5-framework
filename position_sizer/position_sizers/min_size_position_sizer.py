@@ -1,4 +1,4 @@
-from decimal import ROUND_UP, Decimal
+from decimal import Decimal
 import MetaTrader5 as mt5
 
 from data_provider.data_provider import DataProvider
@@ -14,10 +14,7 @@ class MinSizePositionSizer(IPositionSizer):
         volume: float = mt5.symbol_info(symbol).volume_min  # type: ignore
 
         if volume is not None:
-            return Decimal(volume).quantize(  # type: ignore
-                Decimal(str(mt5.symbol_info(symbol).volume_min)),  # type: ignore
-                rounding=ROUND_UP,
-            )
+            return Decimal(volume)  # type: ignore
 
         print(
             f"ERROR (MinSizePositionSizer): Could not determine minimum volume for {symbol}"

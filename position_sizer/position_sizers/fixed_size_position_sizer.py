@@ -15,5 +15,5 @@ class FixedSizePositionSizer(IPositionSizer):
     ) -> Decimal:
         # Return a fixed-size position
         if self.fixed_volume > Decimal(0.0):
-            return self.fixed_volume
+            return Decimal(self.fixed_volume)  # type: ignore)
         return Decimal(0.0)
