@@ -3,6 +3,7 @@ from typing import Any
 
 from platform_connector.platform_connector import PlatformConnector
 from data_provider.data_provider import DataProvider
+from portfolio.portfolio import Portfolio
 from position_sizer.position_sizer import PositionSizer
 from position_sizer.properties.position_sizer_properties import (
     MinSizingProps,
@@ -29,6 +30,7 @@ def main() -> None:
         "SPA35",
     ]
     timeframe = "1min"
+    magic_number = 12345
     slow_ma_pd = 50
     fast_ma_pd = 25
 
@@ -43,8 +45,10 @@ def main() -> None:
         events_queue=events_queue, symbol_list=symbols, timeframe=timeframe
     )
 
+    portfolio = Portfolio(magic_number=magic_number)
+
     signal_generator = SignalMACrossover(
-        events_queue, data_provider, timeframe, fast_ma_pd, slow_ma_pd
+        events_queue, data_provider, portfolio, timeframe, fast_ma_pd, slow_ma_pd
     )
 
     sizing_properties = MinSizingProps()
