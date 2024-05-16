@@ -4,6 +4,7 @@ from typing import Any
 
 from events.events import DataEvent, OrderType, SignalEvent, SignalType
 from data_provider.data_provider import DataProvider
+from portfolio.portfolio import Portfolio
 from signal_generator.interfaces.signal_generator_interface import ISignalGenerator
 
 
@@ -12,12 +13,14 @@ class SignalMACrossover(ISignalGenerator):
         self,
         events_queue: Queue[Any],
         data_provider: DataProvider,
+        portfolio: Portfolio,
         timeframe: str,
         fast_period: int,
         slow_period: int,
     ):
         self.events_queue = events_queue
         self.data_provider = data_provider
+        self.portfolio = portfolio
         self.timeframe = timeframe
         self.fast_period = fast_period if fast_period > 1 else 2
         self.slow_period = slow_period if slow_period > 2 else 3
@@ -93,7 +96,7 @@ class SignalMACrossover(ISignalGenerator):
                 signal=SignalType.BUY if signal.upper() == "BUY" else SignalType.SELL,
                 target_order=OrderType.MARKET,
                 target_price=Decimal("0.0"),
-                magic_number=1234,
+                magic_number=self.portfolio.magic,
                 sl=Decimal("0.0"),
                 tp=Decimal("0.0"),
             )
