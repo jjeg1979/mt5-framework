@@ -2,6 +2,7 @@ from datetime import datetime
 import queue
 import time
 from typing import Any, Callable, Dict, Union
+
 from data_provider.data_provider import DataProvider
 from position_sizer.position_sizer import PositionSizer
 from signal_generator.interfaces.signal_generator_interface import ISignalGenerator
@@ -63,7 +64,7 @@ class TradingDirector:
         Handle the sizing event
         """
         print(
-            f"[{self._dateprint()}] - SIZING EVENT received with volume {event.volume} for symbol: {event.symbol} - Signal: {event.signal} - Order: {event.target_order} - Price: {event.target_price}"
+            f"[{self._dateprint()}] - SIZING EVENT received with volume {event.volume:.2f} for symbol: {event.symbol}"  # type: ignore
         )
 
     def execute(self) -> None:
