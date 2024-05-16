@@ -8,3 +8,7 @@ class MinSizingProps(BaseModel):
 
 class FixedSizingProps(BaseModel):
     volume: Decimal
+
+
+class RiskPctSizingProps(BaseModel):
+    risk_pct: Decimal
