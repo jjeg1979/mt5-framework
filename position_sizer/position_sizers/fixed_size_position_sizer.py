@@ -14,5 +14,6 @@ class FixedSizePositionSizer(IPositionSizer):
         self, signal_event: SignalEvent, data_provider: DataProvider
     ) -> Decimal:
         # Return a fixed-size position
-
-        return self.fixed_volume
+        if self.fixed_volume > Decimal(0.0):
+            return self.fixed_volume
+        return Decimal(0.0)
