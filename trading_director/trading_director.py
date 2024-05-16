@@ -3,24 +3,34 @@ import queue
 import time
 from typing import Any, Callable, Dict, Union
 from data_provider.data_provider import DataProvider
-from events.events import DataEvent
+from signal_generator.interfaces.signal_generator_interface import ISignalGenerator
+
+from events.events import DataEvent, SignalEvent
+
+
+T = Union[DataEvent, SignalEvent]
 
 
 class TradingDirector:
     def __init__(
-        self, events_queue: queue.Queue[Any], data_provider: DataProvider
+        self,
+        events_queue: queue.Queue[Any],
+        data_provider: DataProvider,
+        signal_generator: ISignalGenerator,
     ) -> None:
         self.events_queue = events_queue
 
         # References from the different modules
         self.data_provider = data_provider
+        self.signal_generator = signal_generator
 
         # Trading controller
         self.continue_trading: bool = True
 
         # Creación del event handler
-        self.event_handler: Dict[str, Callable[[Union[DataEvent, Any]], None]] = {
+        self.event_handler: Dict[str, Callable[[T], None]] = {  # type: ignore
             "DATA": self._handle_data_event,
+            "SIGNAL": self._handle_signal_event,
         }
 
     def _dateprint(self) -> str:
@@ -31,7 +41,16 @@ class TradingDirector:
         Handle the data event
         """
         print(
-            f"[{event.data.name}] - Data event received for symbol: {event.symbol} - Last close price: {event.data.close}"  # type: ignore
+            f"[{event.data.name}] - DATA EVENT received for symbol: {event.symbol} - Last close price: {event.data.close}"  # type: ignore
+        )
+        self.signal_generator.generate_signals(event)
+
+    def _handle_signal_event(self, event: SignalEvent) -> None:
+        """
+        Handle the signal event
+        """
+        print(
+            f"[{self._dateprint()}] - SIGNAL EVENT received for symbol: {event.symbol} - Signal: {event.signal} - Order: {event.target_order} - Price: {event.target_price}"
         )
 
     def execute(self) -> None:
