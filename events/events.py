@@ -10,6 +10,7 @@ from pydantic import BaseModel
 class EventType(StrEnum):
     DATA = "DATA"
     SIGNAL = "SIGNAL"
+    SIZING = "SIZING"
 
 
 class SignalType(StrEnum):
@@ -46,3 +47,15 @@ class SignalEvent(BaseEvent):
     magic_number: int
     sl: Decimal
     tp: Decimal
+
+
+class SizingEvent(BaseEvent):
+    event_type: EventType = EventType.SIZING
+    symbol: str
+    signal: SignalType
+    target_order: OrderType
+    target_price: Decimal
+    magic_number: int
+    sl: Decimal
+    tp: Decimal
+    volume: Decimal
