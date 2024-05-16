@@ -68,6 +68,11 @@ class SignalMACrossover(ISignalGenerator):
             symbol, self.timeframe, self.slow_period
         )
 
+        # Retrieve the open positions by this strategy in the symbol
+        open_positions = self.portfolio.get_number_of_strategy_open_positions_by_symbol(
+            symbol
+        )
+
         # Calculate the moving averages
         fast_ma: Any = (
             # bars.close.rolling(window=self.fast_period).mean().iloc[-1].values
@@ -79,15 +84,15 @@ class SignalMACrossover(ISignalGenerator):
         )  # type: ignore
 
         # Detect a buying singal
-
-        if fast_ma > slow_ma:
+        if open_positions["LONG"] == 0 and fast_ma > slow_ma:
             signal = "BUY"
 
         # Detect a selling signal
-        elif slow_ma > fast_ma:
+        elif open_positions["SHORT"] == 0 and slow_ma > fast_ma:
             signal = "SELL"
         else:
             signal = ""
+
         # if there is signal, genrate SignalEvent and
         # put it in the events_queue
         if signal != "":
