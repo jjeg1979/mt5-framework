@@ -11,6 +11,7 @@ class EventType(StrEnum):
     DATA = "DATA"
     SIGNAL = "SIGNAL"
     SIZING = "SIZING"
+    ORDER = "ORDER"
 
 
 class SignalType(StrEnum):
@@ -51,6 +52,18 @@ class SignalEvent(BaseEvent):
 
 class SizingEvent(BaseEvent):
     event_type: EventType = EventType.SIZING
+    symbol: str
+    signal: SignalType
+    target_order: OrderType
+    target_price: Decimal
+    magic_number: int
+    sl: Decimal
+    tp: Decimal
+    volume: Decimal
+
+
+class OrderEvent(BaseEvent):
+    event_type: EventType = EventType.ORDER
     symbol: str
     signal: SignalType
     target_order: OrderType
