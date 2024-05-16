@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import ROUND_UP, Decimal
 import MetaTrader5 as mt5
 
 from utils.utils import Utils
@@ -94,4 +94,4 @@ class RiskPctPositionSizer(IPositionSizer):
             )
             return Decimal(0.0)
 
-        return Decimal(volume)  # type: ignore
+        return Decimal(volume).quantize(Decimal(str(tick_size)), rounding=ROUND_UP)  # type: ignore
