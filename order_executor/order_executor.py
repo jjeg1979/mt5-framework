@@ -246,7 +246,6 @@ class OrderExecutor:
         self.events_queue.put(execution_event)
 
     def _check_execution_status(self, order_result: Any) -> bool:
-        breakpoint()
         if order_result.retcode in (
             mt5.TRADE_RETCODE_DONE,
             mt5.TRADE_RETCODE_DONE_PARTIAL,
