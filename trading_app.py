@@ -56,7 +56,7 @@ def main() -> None:
         events_queue, data_provider, portfolio, timeframe, fast_ma_pd, slow_ma_pd
     )
 
-    sizing_properties = FixedSizingProps(volume=Decimal(500))
+    sizing_properties = FixedSizingProps(volume=Decimal(500.0))
 
     position_sizer = PositionSizer(
         events_queue=events_queue,
