@@ -1,5 +1,4 @@
 from decimal import Decimal
-
 import MetaTrader5 as mt5
 
 
@@ -82,6 +81,7 @@ class Utils:
         last_price = Decimal(tick.bid)  # type: ignore
 
         # Convert the amount from the origin currency to the target currency
+        breakpoint()
         converted_amount = (  # type: ignore
             amount / last_price if fx_symbol_base == to_ccy else amount * last_price
         )
