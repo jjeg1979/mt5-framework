@@ -29,7 +29,7 @@ class MaxLeverageFactorRiskManager(IRiskManager):
         new_leverage_factor = self._compute_leverage_factor(new_account_value)
 
         # Check if the new leverage factor is compliant with the max leverage factor
-        if new_leverage_factor <= self.max_leverage_factor:
+        if abs(new_leverage_factor) <= self.max_leverage_factor:
             return True
         print(
             f"RISK MGMT: The objective position {sizing_event.signal} {sizing_event.volume} implies a Leverage Factor of {new_leverage_factor} which is higher than the max leverage factor {self.max_leverage_factor}"
