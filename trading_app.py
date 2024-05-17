@@ -22,6 +22,7 @@ def main() -> None:
     # Definición de variables necesarias para la estrategia
     symbols = [
         "EURUSD",
+        # ]
         "USDJPY",
         "USDSGD",
         "EURGBP",
@@ -56,7 +57,7 @@ def main() -> None:
         events_queue, data_provider, portfolio, timeframe, fast_ma_pd, slow_ma_pd
     )
 
-    sizing_properties = FixedSizingProps(volume=Decimal(500.0))
+    sizing_properties = FixedSizingProps(volume=Decimal(10.0))
 
     position_sizer = PositionSizer(
         events_queue=events_queue,
@@ -64,7 +65,7 @@ def main() -> None:
         sizing_properties=sizing_properties,
     )
 
-    risk_properties = MaxLeverageFactorRiskProps(max_leverage_factor=Decimal(5.0))
+    risk_properties = MaxLeverageFactorRiskProps(max_leverage_factor=Decimal(5))
 
     risk_manager = RiskManager(
         events_queue=events_queue,
