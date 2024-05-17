@@ -102,6 +102,7 @@ class TradingDirector:
         print(
             f"[{self._dateprint()}] - Received EXECUTION EVENT for {event.signal} on {event.symbol} with volume {event.volume} at price {event.fill_price}"
         )
+        self._process_execution_or_pending_event(event)
 
     def _handle_pending_order_event(self, event: PlacePendingOrderEvent) -> None:
         """_handle_pending_order_event _summary_
@@ -112,6 +113,14 @@ class TradingDirector:
         print(
             f"[{self._dateprint()}] - Received PLACED PENDING ORDER EVENT with volume {event.volume} for {event.signal} {event.target_order} on {event.symbol} at price {event.target_price}"
         )
+        self._process_execution_or_pending_event(event)
+
+    def _process_execution_or_pending_event(
+        self, event: Union[ExecutionEvent, PlacePendingOrderEvent]
+    ) -> None:
+        """
+        Process the execution or pending order event
+        """
 
     def execute(self) -> None:
         """
