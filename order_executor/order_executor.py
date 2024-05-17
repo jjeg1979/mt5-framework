@@ -44,9 +44,9 @@ class OrderExecutor:
         market_order_request = {
             "action": mt5.TRADE_ACTION_DEAL,
             "symbol": order_event.symbol,
-            "volume": order_event.volume,
-            "sl": order_event.sl,
-            "tp": order_event.tp,
+            "volume": float(order_event.volume),
+            "sl": float(order_event.sl),
+            "tp": float(order_event.tp),
             "type": order_type,
             "deviation": 0,
             "magic": order_event.magic_number,
@@ -95,10 +95,10 @@ class OrderExecutor:
         pending_order_request = {  # type: ignore
             "action": mt5.TRADE_ACTION_PENDING,
             "symbol": order_event.symbol,
-            "volume": order_event.volume,
-            "price": order_event.target_price,
-            "sl": order_event.sl,
-            "tp": order_event.tp,
+            "volume": float(order_event.volume),
+            "price": float(order_event.target_price),
+            "sl": float(order_event.sl),
+            "tp": float(order_event.tp),
             "type": order_type,
             "deviation": 0,
             "magic": order_event.magic_number,
@@ -246,6 +246,7 @@ class OrderExecutor:
         self.events_queue.put(execution_event)
 
     def _check_execution_status(self, order_result: Any) -> bool:
+        breakpoint()
         if order_result.retcode in (
             mt5.TRADE_RETCODE_DONE,
             mt5.TRADE_RETCODE_DONE_PARTIAL,
