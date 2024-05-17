@@ -1,4 +1,5 @@
 from decimal import Decimal
+from decouple import config
 from queue import Queue
 from typing import Any
 
@@ -17,6 +18,10 @@ from risk_manager.risk_manager import RiskManager
 from trading_director.trading_director import TradingDirector
 
 from signal_generator.signals.signal_ma_crossover import SignalMACrossover
+from notifications.notifications import (
+    NotificationService,
+    TelegramNotificationProperties,
+)
 
 
 def main() -> None:
@@ -81,6 +86,13 @@ def main() -> None:
         risk_properties=risk_properties,
     )
 
+    notifications = NotificationService(
+        properties=TelegramNotificationProperties(
+            token=config("TELEGRAM_API_TOKEN"),  # type: ignore
+            chat_id=config("TELEGRAM_CHAT_ID"),  # type: ignore
+        )
+    )
+
     # Create the trading director and start the main loop
     trading_director: TradingDirector = TradingDirector(
         events_queue=events_queue,
@@ -89,6 +101,7 @@ def main() -> None:
         position_sizer=position_sizer,
         risk_manager=risk_manager,
         order_executor=order_executor,
+        notification_service=notifications,
     )
     trading_director.execute()
 
