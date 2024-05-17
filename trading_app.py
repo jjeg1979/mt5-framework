@@ -23,19 +23,19 @@ def main() -> None:
     # Definición de variables necesarias para la estrategia
     symbols = [
         "EURUSD",
-        # ]
         "USDJPY",
-        "USDSGD",
-        "EURGBP",
-        "XAUUSD",
-        "SP500",
-        "XTIUSD",
-        "GBPUSD",
-        "USDCHF",
-        "GBPJPY",
-        "NDX",
-        "SPA35",
     ]
+    #     "USDSGD",
+    #     "EURGBP",
+    #     "XAUUSD",
+    #     "SP500",
+    #     "XTIUSD",
+    #     "GBPUSD",
+    #     "USDCHF",
+    #     "GBPJPY",
+    #     "NDX",
+    #     "SPA35",
+    # ]
     timeframe = "1min"
     magic_number = 12345
     slow_ma_pd = 50
@@ -53,12 +53,19 @@ def main() -> None:
     )
 
     portfolio = Portfolio(magic_number=magic_number)
+    order_executor = OrderExecutor(events_queue=events_queue, portfolio=portfolio)
 
     signal_generator = SignalMACrossover(
-        events_queue, data_provider, portfolio, timeframe, fast_ma_pd, slow_ma_pd
+        events_queue=events_queue,
+        data_provider=data_provider,
+        portfolio=portfolio,
+        order_executor=order_executor,
+        timeframe=timeframe,
+        fast_period=fast_ma_pd,
+        slow_period=slow_ma_pd,
     )
 
-    sizing_properties = FixedSizingProps(volume=Decimal(10.0))
+    sizing_properties = FixedSizingProps(volume=Decimal(1.0))
 
     position_sizer = PositionSizer(
         events_queue=events_queue,
@@ -74,8 +81,6 @@ def main() -> None:
         portfolio=portfolio,
         risk_properties=risk_properties,
     )
-
-    order_executor = OrderExecutor(events_queue=events_queue, portfolio=portfolio)
 
     # Create the trading director and start the main loop
     trading_director: TradingDirector = TradingDirector(
