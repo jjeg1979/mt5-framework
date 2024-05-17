@@ -5,9 +5,10 @@ from typing import Any, Callable, Dict, Union
 
 from data_provider.data_provider import DataProvider
 from position_sizer.position_sizer import PositionSizer
+from risk_manager.risk_manager import RiskManager
 from signal_generator.interfaces.signal_generator_interface import ISignalGenerator
 
-from events.events import DataEvent, SignalEvent, SizingEvent
+from events.events import DataEvent, OrderEvent, SignalEvent, SizingEvent
 
 
 T = Union[DataEvent, SignalEvent]
@@ -20,6 +21,7 @@ class TradingDirector:
         data_provider: DataProvider,
         signal_generator: ISignalGenerator,
         position_sizer: PositionSizer,
+        risk_manager: RiskManager,
     ) -> None:
         self.events_queue = events_queue
 
@@ -27,6 +29,7 @@ class TradingDirector:
         self.data_provider = data_provider
         self.signal_generator = signal_generator
         self.position_sizer = position_sizer
+        self.risk_manager = risk_manager
 
         # Trading controller
         self.continue_trading: bool = True
@@ -36,6 +39,7 @@ class TradingDirector:
             "DATA": self._handle_data_event,
             "SIGNAL": self._handle_signal_event,
             "SIZING": self._handle_sizing_event,
+            "ORDER": self._handle_order_event,
         }
 
     def _dateprint(self) -> str:
@@ -65,6 +69,15 @@ class TradingDirector:
         """
         print(
             f"[{self._dateprint()}] - SIZING EVENT received with volume {event.volume:.2f} for symbol: {event.symbol}"  # type: ignore
+        )
+        self.risk_manager.assess_order(event)
+
+    def _handle_order_event(self, event: OrderEvent) -> None:
+        """
+        Handle the order event
+        """
+        print(
+            f"[{self._dateprint()}] - ORDER EVENT for {event.signal} with volume {event.volume:.2f} for symbol: {event.symbol}"
         )
 
     def execute(self) -> None:
