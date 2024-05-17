@@ -83,7 +83,7 @@ class RiskManager(IRiskManager):
         symbol_info = mt5.symbol_info(symbol)  # type: ignore
 
         # Units operated volume in symbol units (base currency, barrels of oil, ounces of gold, etc)
-        traded_units = volume * Decimal(str(symbol_info.trade_contract_size))  # type: ignore
+        traded_units = Decimal(volume) * Decimal(symbol_info.trade_contract_size)  # type: ignore
 
         # Convert traded units to profit or quoted currency (USD for gold, oil, CHF for GBPCHF, EUR for DAX,....)
         value_traded_in_profit_ccy = traded_units * Decimal(
