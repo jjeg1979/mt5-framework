@@ -14,6 +14,7 @@ class EventType(StrEnum):
     SIZING = "SIZING"
     ORDER = "ORDER"
     EXECUTION = "EXECUTION"
+    PENDING = "PENDING"
 
 
 class SignalType(StrEnum):
@@ -82,4 +83,16 @@ class ExecutionEvent(BaseEvent):
     signal: SignalType
     fill_price: Decimal
     fill_time: datetime
+    volume: Decimal
+
+
+class PlacePendingOrderEvent(BaseEvent):
+    event_type: EventType = EventType.PENDING
+    symbol: str
+    signal: SignalType
+    target_order: OrderType
+    target_price: Decimal
+    magic_number: int
+    sl: Decimal
+    tp: Decimal
     volume: Decimal
