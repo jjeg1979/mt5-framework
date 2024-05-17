@@ -6,5 +6,5 @@ class BaseRiskProps(BaseModel):
     pass
 
 
-class MaxLeverageRiskProps(BaseRiskProps):
+class MaxLeverageFactorRiskProps(BaseRiskProps):
     max_leverage_factor: Decimal
