@@ -160,6 +160,24 @@ class OrderExecutor:
                 f"ORD EXEC: Error while closing the position {ticket} for {position.symbol} and volume {position.volume}: {result.comment}"
             )
 
+    def close_strategy_long_position_by_symbol(self, symbol: str) -> None:
+        # Get the open positions for the strategy
+        positions = self.portfolio.get_strategy_open_positions(symbol)  # type: ignore
+
+        # Filter positions by symbol and direction and close
+        for position in positions:  # type: ignore
+            if position.symbol == symbol and position.signal == mt5.ORDER_TYPE_BUY:
+                self.close_position_by_ticket(position.ticket)  # type: ignore
+
+    def close_strategy_short_position_by_symbol(self, symbol: str) -> None:
+        # Get the open positions for the strategy
+        positions = self.portfolio.get_strategy_open_positions(symbol)  # type: ignore
+
+        # Filter positions by symbol and direction and close
+        for position in positions:  # type: ignore
+            if position.symbol == symbol and position.signal == mt5.ORDER_TYPE_SELL:
+                self.close_position_by_ticket(position.ticket)  # type: ignore
+
     def _create_and_put_placed_pending_order_event(
         self, order_event: OrderEvent
     ) -> None:
@@ -177,6 +195,36 @@ class OrderExecutor:
 
         # Put the event in the queue
         self.events_queue.put(placed_pending_order_event)
+
+    def cancel_pending_order_by_ticket(self, ticket: int) -> None:
+        # Get the information of the pending order
+        order = mt5.orders_get(ticket=ticket)[0]  # type: ignore
+
+        # Check if the pending order exists
+        if order is None:
+            print(f"ORD EXEC: Pending order with ticket {ticket} not found")
+            return
+
+        # Create the trade request to cancel the pending order
+        cancel_request: Dict[str, Any] = {
+            "action": mt5.TRADE_ACTION_REMOVE,
+            "order": order.ticket,
+            "symbol": order.symbol,
+        }
+
+        # Send the trade request to cancel the pending order
+        result = mt5.order_send(cancel_request)  # type: ignore
+
+        # Check if the order was executed successfully
+        if self._check_execution_status(result):
+            print(
+                f"ORD EXEC: Pending order with ticket {ticket} for {order.symbol} and volume {order.volume_initial} cancelled successfully"
+            )
+        else:
+            # Order was not executed
+            print(
+                f"ORD EXEC: Error while cancelling the pending order {ticket} for {order.symbol} and volume {order.volume_initial}: {result.comment}"
+            )
 
     def _create_and_put_execution_event(self, order_result: Any) -> None:
         # Get deal info, result of the order execution
