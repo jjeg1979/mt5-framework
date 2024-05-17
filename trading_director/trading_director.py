@@ -4,6 +4,7 @@ import time
 from typing import Any, Callable, Dict, Union
 
 from data_provider.data_provider import DataProvider
+from notifications.notifications import NotificationService
 from order_executor.order_executor import OrderExecutor
 from position_sizer.position_sizer import PositionSizer
 from risk_manager.risk_manager import RiskManager
@@ -31,6 +32,7 @@ class TradingDirector:
         position_sizer: PositionSizer,
         risk_manager: RiskManager,
         order_executor: OrderExecutor,
+        notification_service: NotificationService,
     ) -> None:
         self.events_queue = events_queue
 
@@ -40,6 +42,7 @@ class TradingDirector:
         self.position_sizer = position_sizer
         self.risk_manager = risk_manager
         self.order_executor = order_executor
+        self.notifications = notification_service
 
         # Trading controller
         self.continue_trading: bool = True
@@ -121,6 +124,16 @@ class TradingDirector:
         """
         Process the execution or pending order event
         """
+        if isinstance(event, ExecutionEvent):
+            self.notifications.send_notification(
+                title="Market Order Event",
+                message=f"Execution on {event.symbol} with volume {event.volume} at price {event.fill_price}",
+            )
+        elif isinstance(event, PlacePendingOrderEvent):  # type: ignore
+            self.notifications.send_notification(
+                title="Pending Order Event",
+                message=f"Placed pending order on {event.symbol} with volume {event.volume} at price {event.target_price}",
+            )
 
     def execute(self) -> None:
         """
