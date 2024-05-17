@@ -45,18 +45,23 @@ class Utils:
             "USDJPY",
             "USDSEK",
             "USDNOK",
+            "SGDUSD",
+            "SGDEUR",
+            "SGDJPY",
+            "XTIUSD",
+            "SPA500",
         )
 
         # Convert currecies to uppercase (just in case)
         from_ccy = from_currency.upper()
         to_ccy = to_currency.upper()
 
-        # Lookup the symbol that relates origin and target currency (list comprehension)
         fx_symbol = [
             symbol
             for symbol in all_fx_symbol
             if from_ccy in symbol and to_ccy in symbol
         ][0]
+
         fx_symbol_base = fx_symbol[:3]
 
         # Retrieve the last data for the fx_symbol
@@ -74,7 +79,7 @@ class Utils:
             return Decimal(0.0)
 
         # Retrieve last available bid price for symbol
-        last_price = tick.bid  # type: ignore
+        last_price = Decimal(tick.bid)  # type: ignore
 
         # Convert the amount from the origin currency to the target currency
         converted_amount = (  # type: ignore
