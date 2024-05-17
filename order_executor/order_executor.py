@@ -4,7 +4,13 @@ from typing import Any
 import MetaTrader5 as mt5
 import pandas as pd
 
-from events.events import ExecutionEvent, OrderEvent, OrderType, SignalType
+from events.events import (
+    ExecutionEvent,
+    PlacePendingOrderEvent,
+    OrderEvent,
+    OrderType,
+    SignalType,
+)
 from portfolio.portfolio import Portfolio
 
 
@@ -16,10 +22,10 @@ class OrderExecutor:
     def execute_order(self, order_event: OrderEvent) -> None:
         if order_event.target_order == "MARKET":
             # Call the method that executes a market order
-            pass
+            self._execute_market_order(order_event)
         elif order_event.target_order in (OrderType.LIMIT, OrderType.STOP):
             # Call the method that executes a limit order
-            pass
+            self._send_pending_order(order_event)
         else:
             raise ValueError(f"Order type not supported: {order_event.target_order}")
 
@@ -54,7 +60,7 @@ class OrderExecutor:
         # Check if the order was executed successfully
         if self._check_execution_status(result):
             print(
-                f"ORD EXEC: Market Order {order_event.symbol} for {order_event.symbol} with {order_event.volume} lots executed successfully"
+                f"ORD EXEC: Market Order {order_event.signal} {order_event.target_order} for {order_event.symbol} with {order_event.volume} lots executed successfully"
             )
             # Generate execution event and add to queue
             self._create_and_put_execution_event(result)
@@ -63,6 +69,77 @@ class OrderExecutor:
             print(
                 f"ORD EXEC: Error while executing the Market Order {order_event.signal} for {order_event.symbol}: {result.comment}"
             )
+
+    def _send_pending_order(self, order_event: OrderEvent) -> None:
+        # Check if the order is STOP or LIMIT
+        if order_event.target_order == OrderType.STOP:
+            # Stop order
+            order_type = (
+                mt5.ORDER_TYPE_BUY_STOP
+                if order_event.signal == "BUY"
+                else mt5.ORDER_TYPE_SELL_STOP
+            )
+        elif order_event.target_order == OrderType.LIMIT:
+            # Limit order
+            order_type = (
+                mt5.ORDER_TYPE_BUY_LIMIT
+                if order_event.signal == "BUY"
+                else mt5.ORDER_TYPE_SELL_LIMIT
+            )
+        else:
+            raise ValueError(
+                f"ORD EXEC: Order type not valid: {order_event.target_order}"
+            )
+
+        # Pending order request creation
+        pending_order_request = {  # type: ignore
+            "action": mt5.TRADE_ACTION_PENDING,
+            "symbol": order_event.symbol,
+            "volume": order_event.volume,
+            "price": order_event.target_price,
+            "sl": order_event.sl,
+            "tp": order_event.tp,
+            "type": order_type,
+            "deviation": 0,
+            "magic": order_event.magic_number,
+            "comment": "FWK Pending Order",
+            "type_filling": mt5.ORDER_FILLING_FOK,
+            "type_time": mt5.ORDER_TIME_GTC,
+        }
+
+        # Send the trade request to put the pending order
+        result = mt5.order_send(pending_order_request)  # type: ignore
+
+        # Check if the order was executed successfully
+        if self._check_execution_status(result):
+            print(
+                f"ORD EXEC: Pending Order {order_event.signal} {order_event.target_order} for {order_event.symbol} with {order_event.volume} lots sent at {order_event.target_price} successfully"
+            )
+            # Place the specific pending order event in the queue
+            self._create_and_put_placed_pending_order_event(order_event)
+        else:
+            # Order was not executed
+            print(
+                f"ORD EXEC: Error while executing the Pending Order {order_event.signal} for {order_event.symbol}: {result.comment}"
+            )
+
+    def _create_and_put_placed_pending_order_event(
+        self, order_event: OrderEvent
+    ) -> None:
+        # Create the placed pending order event
+        placed_pending_order_event = PlacePendingOrderEvent(
+            symbol=order_event.symbol,
+            signal=order_event.signal,
+            target_order=order_event.target_order,
+            target_price=order_event.target_price,
+            magic_number=order_event.magic_number,
+            sl=order_event.sl,
+            tp=order_event.tp,
+            volume=order_event.volume,
+        )
+
+        # Put the event in the queue
+        self.events_queue.put(placed_pending_order_event)
 
     def _create_and_put_execution_event(self, order_result: Any) -> None:
         # Get deal info, result of the order execution
