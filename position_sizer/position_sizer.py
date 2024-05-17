@@ -54,7 +54,7 @@ class PositionSizer(IPositionSizer):
             return RiskPctPositionSizer(sizing_properties)
 
         raise ValueError(
-            f"Position sizer method not recognized. Please check the properties passed {sizing_properties}"
+            f"ERROR: Position sizer method not recognized. Please check the properties passed {sizing_properties}"
         )
 
     def _create_and_put_sizing_event(
@@ -94,4 +94,4 @@ class PositionSizer(IPositionSizer):
             )  # type: ignore
             return
         # Put volume in a sizing event and add event to the events queue
-        self._create_and_put_sizing_event(signal_event, volume)
+        self._create_and_put_sizing_event(signal_event, volume)  # type: ignore
