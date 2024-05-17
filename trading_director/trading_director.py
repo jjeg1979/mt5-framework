@@ -4,11 +4,19 @@ import time
 from typing import Any, Callable, Dict, Union
 
 from data_provider.data_provider import DataProvider
+from order_executor.order_executor import OrderExecutor
 from position_sizer.position_sizer import PositionSizer
 from risk_manager.risk_manager import RiskManager
 from signal_generator.interfaces.signal_generator_interface import ISignalGenerator
 
-from events.events import DataEvent, OrderEvent, SignalEvent, SizingEvent
+from events.events import (
+    DataEvent,
+    ExecutionEvent,
+    OrderEvent,
+    PlacePendingOrderEvent,
+    SignalEvent,
+    SizingEvent,
+)
 
 
 T = Union[DataEvent, SignalEvent]
@@ -22,6 +30,7 @@ class TradingDirector:
         signal_generator: ISignalGenerator,
         position_sizer: PositionSizer,
         risk_manager: RiskManager,
+        order_executor: OrderExecutor,
     ) -> None:
         self.events_queue = events_queue
 
@@ -30,6 +39,7 @@ class TradingDirector:
         self.signal_generator = signal_generator
         self.position_sizer = position_sizer
         self.risk_manager = risk_manager
+        self.order_executor = order_executor
 
         # Trading controller
         self.continue_trading: bool = True
@@ -40,6 +50,8 @@ class TradingDirector:
             "SIGNAL": self._handle_signal_event,
             "SIZING": self._handle_sizing_event,
             "ORDER": self._handle_order_event,
+            "EXECUTION": self._handle_execution_event,
+            "PENDING": self._handle_pending_order_event,
         }
 
     def _dateprint(self) -> str:
@@ -78,6 +90,27 @@ class TradingDirector:
         """
         print(
             f"[{self._dateprint()}] - ORDER EVENT for {event.signal} with volume {event.volume:.2f} for symbol: {event.symbol}"
+        )
+        self.order_executor.execute_order(event)
+
+    def _handle_execution_event(self, event: ExecutionEvent) -> None:
+        """_handle_execution_event _summary_
+
+        Args:
+            event (ExecutionEvent): _description_
+        """
+        print(
+            f"[{self._dateprint()}] - Received EXECUTION EVENT for {event.signal} on {event.symbol} with volume {event.volume} at price {event.fill_price}"
+        )
+
+    def _handle_pending_order_event(self, event: PlacePendingOrderEvent) -> None:
+        """_handle_pending_order_event _summary_
+
+        Args:
+            event (PlacePendingOrderEvent): _description_
+        """
+        print(
+            f"[{self._dateprint()}] - Received PLACED PENDING ORDER EVENT with volume {event.volume} for {event.signal} {event.target_order} on {event.symbol} at price {event.target_price}"
         )
 
     def execute(self) -> None:
