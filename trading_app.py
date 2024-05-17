@@ -2,6 +2,7 @@ from decimal import Decimal
 from queue import Queue
 from typing import Any
 
+from order_executor.order_executor import OrderExecutor
 from platform_connector.platform_connector import PlatformConnector
 from data_provider.data_provider import DataProvider
 from portfolio.portfolio import Portfolio
@@ -73,6 +74,9 @@ def main() -> None:
         portfolio=portfolio,
         risk_properties=risk_properties,
     )
+
+    order_executor = OrderExecutor(events_queue=events_queue, portfolio=portfolio)
+
     # Create the trading director and start the main loop
     trading_director: TradingDirector = TradingDirector(
         events_queue=events_queue,
@@ -80,6 +84,7 @@ def main() -> None:
         signal_generator=signal_generator,
         position_sizer=position_sizer,
         risk_manager=risk_manager,
+        order_executor=order_executor,
     )
     trading_director.execute()
 
