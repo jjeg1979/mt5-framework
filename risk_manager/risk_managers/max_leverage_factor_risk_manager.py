@@ -32,7 +32,7 @@ class MaxLeverageFactorRiskManager(IRiskManager):
         if abs(new_leverage_factor) <= self.max_leverage_factor:
             return True
         print(
-            f"RISK MGMT: The objective position {sizing_event.signal} {sizing_event.volume} implies a Leverage Factor of {new_leverage_factor} which is higher than the max leverage factor {self.max_leverage_factor}"
+            f"RISK MGMT: The objective position {sizing_event.signal} {sizing_event.volume} implies a Leverage Factor of {abs(new_leverage_factor)} which is higher than the max leverage factor {self.max_leverage_factor}"
         )
         return False
 
