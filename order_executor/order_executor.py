@@ -160,22 +160,22 @@ class OrderExecutor:
                 f"ORD EXEC: Error while closing the position {ticket} for {position.symbol} and volume {position.volume}: {result.comment}"
             )
 
-    def close_strategy_long_position_by_symbol(self, symbol: str) -> None:
+    def close_strategy_long_positions_by_symbol(self, symbol: str) -> None:
         # Get the open positions for the strategy
-        positions = self.portfolio.get_strategy_open_positions(symbol)  # type: ignore
+        positions = self.portfolio.get_strategy_open_positions()  # type: ignore
 
         # Filter positions by symbol and direction and close
         for position in positions:  # type: ignore
-            if position.symbol == symbol and position.signal == mt5.ORDER_TYPE_BUY:
+            if position.symbol == symbol and position.signal == mt5.ORDER_TYPE_BUY:  # type: ignore
                 self.close_position_by_ticket(position.ticket)  # type: ignore
 
-    def close_strategy_short_position_by_symbol(self, symbol: str) -> None:
+    def close_strategy_short_positions_by_symbol(self, symbol: str) -> None:
         # Get the open positions for the strategy
-        positions = self.portfolio.get_strategy_open_positions(symbol)  # type: ignore
+        positions = self.portfolio.get_strategy_open_positions()  # type: ignore
 
         # Filter positions by symbol and direction and close
         for position in positions:  # type: ignore
-            if position.symbol == symbol and position.signal == mt5.ORDER_TYPE_SELL:
+            if position.symbol == symbol and position.signal == mt5.ORDER_TYPE_SELL:  # type: ignore
                 self.close_position_by_ticket(position.ticket)  # type: ignore
 
     def _create_and_put_placed_pending_order_event(
