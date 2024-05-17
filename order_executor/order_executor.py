@@ -166,7 +166,7 @@ class OrderExecutor:
 
         # Filter positions by symbol and direction and close
         for position in positions:  # type: ignore
-            if position.symbol == symbol and position.signal == mt5.ORDER_TYPE_BUY:  # type: ignore
+            if position.symbol == symbol and position.type == mt5.ORDER_TYPE_BUY:  # type: ignore
                 self.close_position_by_ticket(position.ticket)  # type: ignore
 
     def close_strategy_short_positions_by_symbol(self, symbol: str) -> None:
@@ -175,7 +175,7 @@ class OrderExecutor:
 
         # Filter positions by symbol and direction and close
         for position in positions:  # type: ignore
-            if position.symbol == symbol and position.signal == mt5.ORDER_TYPE_SELL:  # type: ignore
+            if position.symbol == symbol and position.type == mt5.ORDER_TYPE_SELL:  # type: ignore
                 self.close_position_by_ticket(position.ticket)  # type: ignore
 
     def _create_and_put_placed_pending_order_event(
