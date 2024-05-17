@@ -4,6 +4,7 @@ from typing import Any
 
 from events.events import DataEvent, OrderType, SignalEvent, SignalType
 from data_provider.data_provider import DataProvider
+from order_executor.order_executor import OrderExecutor
 from portfolio.portfolio import Portfolio
 from signal_generator.interfaces.signal_generator_interface import ISignalGenerator
 
@@ -14,6 +15,7 @@ class SignalMACrossover(ISignalGenerator):
         events_queue: Queue[Any],
         data_provider: DataProvider,
         portfolio: Portfolio,
+        order_executor: OrderExecutor,
         timeframe: str,
         fast_period: int,
         slow_period: int,
@@ -21,6 +23,7 @@ class SignalMACrossover(ISignalGenerator):
         self.events_queue = events_queue
         self.data_provider = data_provider
         self.portfolio = portfolio
+        self.order_executor = order_executor
         self.timeframe = timeframe
         self.fast_period = fast_period if fast_period > 1 else 2
         self.slow_period = slow_period if slow_period > 2 else 3
@@ -85,10 +88,18 @@ class SignalMACrossover(ISignalGenerator):
 
         # Detect a buying singal
         if open_positions["LONG"] == 0 and fast_ma > slow_ma:
+            # Check if there are short positions open
+            if open_positions["SHORT"] > 0:
+                # We have a buying signal, but we have sell option. We must close the sell before opening a buy
+                self.order_executor.close_strategy_short_position_by_symbol(symbol)
             signal = "BUY"
 
         # Detect a selling signal
         elif open_positions["SHORT"] == 0 and slow_ma > fast_ma:
+            # Check if there are long positions open
+            if open_positions["LONG"] > 0:
+                # We have a selling signal, but we have buy option. We must close the buy before opening a sell
+                self.order_executor.close_strategy_long_position_by_symbol(symbol)
             signal = "SELL"
         else:
             signal = ""
