@@ -105,7 +105,7 @@ class TradingDirector:
         print(
             f"[{self._dateprint()}] - Received EXECUTION EVENT for {event.signal} on {event.symbol} with volume {event.volume} at price {event.fill_price}"
         )
-        self._process_execution_or_pending_event(event)
+        self._process_execution_or_pending_events(event)
 
     def _handle_pending_order_event(self, event: PlacePendingOrderEvent) -> None:
         """_handle_pending_order_event _summary_
@@ -116,9 +116,9 @@ class TradingDirector:
         print(
             f"[{self._dateprint()}] - Received PLACED PENDING ORDER EVENT with volume {event.volume} for {event.signal} {event.target_order} on {event.symbol} at price {event.target_price}"
         )
-        self._process_execution_or_pending_event(event)
+        self._process_execution_or_pending_events(event)
 
-    def _process_execution_or_pending_event(
+    def _process_execution_or_pending_events(
         self, event: Union[ExecutionEvent, PlacePendingOrderEvent]
     ) -> None:
         """
@@ -126,13 +126,13 @@ class TradingDirector:
         """
         if isinstance(event, ExecutionEvent):
             self.notifications.send_notification(
-                title="Market Order Event",
-                message=f"Execution on {event.symbol} with volume {event.volume} at price {event.fill_price}",
+                title=f"{event.symbol} - MARKET ORDER",
+                message=f"Executed MARKET ORDER {event.signal} on {event.symbol} with volume {event.volume} at price {event.fill_price}",
             )
         elif isinstance(event, PlacePendingOrderEvent):  # type: ignore
             self.notifications.send_notification(
-                title="Pending Order Event",
-                message=f"Placed pending order on {event.symbol} with volume {event.volume} at price {event.target_price}",
+                title=f"{event.symbol} PENDING ORDER",
+                message=f"PENDING ORDER placed {event.signal} on {event.symbol} with volume {event.volume} at price {event.target_price}",
             )
 
     def execute(self) -> None:
