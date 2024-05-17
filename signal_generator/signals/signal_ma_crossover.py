@@ -92,7 +92,7 @@ class SignalMACrossover(ISignalGenerator):
             # TODO: Send a closing event so Trading Director handles it and closes the position (FIFO queue allows for correct order execution of events)
             if open_positions["SHORT"] > 0:
                 # We have a buying signal, but we have sell option. We must close the sell before opening a buy
-                self.order_executor.close_strategy_short_position_by_symbol(symbol)
+                self.order_executor.close_strategy_short_positions_by_symbol(symbol)
             signal = "BUY"
 
         # Detect a selling signal
@@ -100,7 +100,7 @@ class SignalMACrossover(ISignalGenerator):
             # Check if there are long positions open
             if open_positions["LONG"] > 0:
                 # We have a selling signal, but we have buy option. We must close the buy before opening a sell
-                self.order_executor.close_strategy_long_position_by_symbol(symbol)
+                self.order_executor.close_strategy_long_positions_by_symbol(symbol)
             signal = "SELL"
         else:
             signal = ""
