@@ -24,18 +24,17 @@ def main() -> None:
     symbols = [
         "EURUSD",
         "USDJPY",
+        "USDSGD",
+        "EURGBP",
+        "XAUUSD",
+        "SP500",
+        "XTIUSD",
+        "GBPUSD",
+        "USDCHF",
+        "GBPJPY",
+        "NDX",
+        "SPA35",
     ]
-    #     "USDSGD",
-    #     "EURGBP",
-    #     "XAUUSD",
-    #     "SP500",
-    #     "XTIUSD",
-    #     "GBPUSD",
-    #     "USDCHF",
-    #     "GBPJPY",
-    #     "NDX",
-    #     "SPA35",
-    # ]
     timeframe = "1min"
     magic_number = 12345
     slow_ma_pd = 50
