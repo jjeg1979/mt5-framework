@@ -65,7 +65,7 @@ class RiskManager(IRiskManager):
             total_value += self._compute_value_of_position_in_account_currency(
                 position.symbol,  # type: ignore
                 position.volume,  # type: ignore
-                position.position_type,  # type: ignore
+                position.type,  # type: ignore
             )
 
         return total_value  # type: ignore
