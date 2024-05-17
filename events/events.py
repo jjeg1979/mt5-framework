@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import StrEnum
 from decimal import Decimal
 
@@ -12,6 +13,7 @@ class EventType(StrEnum):
     SIGNAL = "SIGNAL"
     SIZING = "SIZING"
     ORDER = "ORDER"
+    EXECUTION = "EXECUTION"
 
 
 class SignalType(StrEnum):
@@ -71,4 +73,13 @@ class OrderEvent(BaseEvent):
     magic_number: int
     sl: Decimal
     tp: Decimal
+    volume: Decimal
+
+
+class ExecutionEvent(BaseEvent):
+    event_type: EventType = EventType.EXECUTION
+    symbol: str
+    signal: SignalType
+    fill_price: Decimal
+    fill_time: datetime
     volume: Decimal
