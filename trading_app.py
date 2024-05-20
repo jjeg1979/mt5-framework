@@ -21,7 +21,10 @@ from position_sizer.properties.position_sizer_properties import (
 
 from risk_manager.properties.risk_manager_properties import MaxLeverageFactorRiskProps
 from risk_manager.risk_manager import RiskManager
-from signal_generator.properties.signal_generator_properties import MACrossoverProps
+from signal_generator.properties.signal_generator_properties import (
+    # MACrossoverProps,
+    RSIProps,
+)
 from signal_generator.signal_generator import SignalGenerator
 from trading_director.trading_director import TradingDirector
 
@@ -44,8 +47,21 @@ def main() -> None:
     ]
     timeframe = "1min"
     magic_number = 12345
-    slow_ma_pd = 50
-    fast_ma_pd = 25
+
+    # mac_props = MACrossoverProps(
+    #     timeframe=timeframe,
+    #     fast_period=5,
+    #     slow_period=10,
+    # )
+
+    rsi_props = RSIProps(
+        timeframe=timeframe,
+        rsi_period=14,
+        rsi_upper=70.0,
+        rsi_lower=30.0,
+        sl_points=50,
+        tp_points=70,
+    )
 
     # Create main events queue
     events_queue: Queue[Any] = Queue()
@@ -66,14 +82,10 @@ def main() -> None:
         data_provider=data_provider,
         portfolio=portfolio,
         order_executor=order_executor,
-        signal_properties=MACrossoverProps(
-            timeframe=timeframe,
-            fast_period=fast_ma_pd,
-            slow_period=slow_ma_pd,
-        ),
+        signal_properties=rsi_props,
     )
 
-    sizing_properties = FixedSizingProps(volume=Decimal(1.0))
+    sizing_properties = FixedSizingProps(volume=Decimal(0.05))
 
     position_sizer = PositionSizer(
         events_queue=events_queue,
