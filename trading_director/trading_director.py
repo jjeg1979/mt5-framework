@@ -132,6 +132,24 @@ class TradingDirector:
                 message=f"PENDING ORDER placed {event.signal} on {event.symbol} with volume {event.volume} at price {event.target_price}",
             )
 
+    def _handle_none_event(self, event: Any) -> None:
+        """
+        Handle the null event
+        """
+        print(
+            f"[{Utils.dateprint()}] - ERROR: Null event received! Stopping the framework execution. Event: {event}"
+        )
+        self.continue_trading = False
+
+    def _handle_unknown_event(self, event: Any) -> None:
+        """
+        Handle the unknown event
+        """
+        print(
+            f"[{Utils.dateprint()}] - ERROR: Unknown even received! Stopping the framework execution. Event: {event}"
+        )
+        self.continue_trading = False
+
     def execute(self) -> None:
         """
         Execute the main loop of the trading director
@@ -145,13 +163,12 @@ class TradingDirector:
                 self.data_provider.check_for_new_data()
             else:
                 if event is not None:
-                    handler = self.event_handler.get(event.event_type)
+                    handler = self.event_handler.get(
+                        event.event_type, self._handle_unknown_event
+                    )
                     handler(event)  # type: ignore
                 else:
-                    self.continue_trading = False
-                    print(
-                        "ERROR: Null event received! Stopping the framework execution."
-                    )
+                    self._handle_none_event(event)
 
             time.sleep(0.01)
 
