@@ -23,7 +23,7 @@ class SignalMACrossover(ISignalGenerator):
                 f"ERROR: The fast moving average {self.fast_period} should be lower than the slow moving average {self.slow_period}."
             )
 
-    def generate_signals(
+    def generate_signal(
         self,
         data_event: DataEvent,
         data_provider: DataProvider,
