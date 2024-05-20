@@ -7,7 +7,7 @@ from portfolio.portfolio import Portfolio
 
 
 class ISignalGenerator(Protocol):
-    def generate_signals(
+    def generate_signal(
         self,
         data_event: DataEvent,
         data_provider: DataProvider,
