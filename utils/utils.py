@@ -1,3 +1,5 @@
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from decimal import Decimal
 import MetaTrader5 as mt5
 
@@ -85,3 +87,9 @@ class Utils:
             amount / last_price if fx_symbol_base == to_ccy else amount * last_price
         )
         return Decimal(converted_amount)  # type: ignore
+
+    @staticmethod
+    def dateprint() -> str:
+        return datetime.now(ZoneInfo("Asia/Nicosia")).strftime("%d/%m/%Y %H:%M:%S.%f")[
+            :-3
+        ]
