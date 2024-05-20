@@ -12,6 +12,7 @@ from events.events import (
     SignalType,
 )
 from portfolio.portfolio import Portfolio
+from utils.utils import Utils
 
 
 class OrderExecutor:
@@ -60,14 +61,14 @@ class OrderExecutor:
         # Check if the order was executed successfully
         if self._check_execution_status(result):
             print(
-                f"ORD EXEC: Market Order {order_event.signal} {order_event.target_order} for {order_event.symbol} with {order_event.volume} lots executed successfully"
+                f"[{Utils.dateprint()}] - ORD EXEC: Market Order {order_event.signal} {order_event.target_order} for {order_event.symbol} with {order_event.volume} lots executed successfully"
             )
             # Generate execution event and add to queue
             self._create_and_put_execution_event(result)
         else:
             # Order was not executed
             print(
-                f"ORD EXEC: Error while executing the Market Order {order_event.signal} for {order_event.symbol}: {result.comment}"
+                f"[{Utils.dateprint()}] - ORD EXEC: Error while executing the Market Order {order_event.signal} for {order_event.symbol}: {result.comment}"
             )
 
     def _send_pending_order(self, order_event: OrderEvent) -> None:
@@ -113,14 +114,14 @@ class OrderExecutor:
         # Check if the order was executed successfully
         if self._check_execution_status(result):
             print(
-                f"ORD EXEC: Pending Order {order_event.signal} {order_event.target_order} for {order_event.symbol} with {order_event.volume} lots sent at {order_event.target_price} successfully"
+                f"[{Utils.dateprint()}] - ORD EXEC: Pending Order {order_event.signal} {order_event.target_order} for {order_event.symbol} with {order_event.volume} lots sent at {order_event.target_price} successfully"
             )
             # Place the specific pending order event in the queue
             self._create_and_put_placed_pending_order_event(order_event)
         else:
             # Order was not executed
             print(
-                f"ORD EXEC: Error while executing the Pending Order {order_event.signal} for {order_event.symbol}: {result.comment}"
+                f"[{Utils.dateprint()}] - ORD EXEC: Error while executing the Pending Order {order_event.signal} for {order_event.symbol}: {result.comment}"
             )
 
     def close_position_by_ticket(self, ticket: int) -> None:
@@ -129,7 +130,7 @@ class OrderExecutor:
 
         # Verifiy that the position exists
         if position is None:
-            print(f"ORD EXEC: Position with ticket {ticket} not found")
+            print(f"[{Utils.dateprint()}] - ORD EXEC: Position with ticket {ticket} not found")
             return
 
         # Create the trade request to close the position
@@ -150,14 +151,14 @@ class OrderExecutor:
         # Check if the order was executed successfully
         if self._check_execution_status(result):
             print(
-                f"ORD EXEC: Position with ticket {ticket} for {position.symbol} with volume {position.volume} closed successfully"
+                f"[{Utils.dateprint()}] - ORD EXEC: Position with ticket {ticket} for {position.symbol} with volume {position.volume} closed successfully"
             )
             # Generate execution event and add to queue
             self._create_and_put_execution_event(result)
         else:
             # Order was not executed
             print(
-                f"ORD EXEC: Error while closing the position {ticket} for {position.symbol} and volume {position.volume}: {result.comment}"
+                f"[{Utils.dateprint()}] - ORD EXEC: Error while closing the position {ticket} for {position.symbol} and volume {position.volume}: {result.comment}"
             )
 
     def close_strategy_long_positions_by_symbol(self, symbol: str) -> None:
@@ -218,12 +219,12 @@ class OrderExecutor:
         # Check if the order was executed successfully
         if self._check_execution_status(result):
             print(
-                f"ORD EXEC: Pending order with ticket {ticket} for {order.symbol} and volume {order.volume_initial} cancelled successfully"
+                f"[{Utils.dateprint()}] - ORD EXEC: Pending order with ticket {ticket} for {order.symbol} and volume {order.volume_initial} cancelled successfully"
             )
         else:
             # Order was not executed
             print(
-                f"ORD EXEC: Error while cancelling the pending order {ticket} for {order.symbol} and volume {order.volume_initial}: {result.comment}"
+                f"[{Utils.dateprint()}] - ORD EXEC: Error while cancelling the pending order {ticket} for {order.symbol} and volume {order.volume_initial}: {result.comment}"
             )
 
     def _create_and_put_execution_event(self, order_result: Any) -> None:
