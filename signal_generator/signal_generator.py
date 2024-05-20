@@ -8,8 +8,10 @@ from signal_generator.interfaces.signal_generator_interface import ISignalGenera
 from signal_generator.properties.signal_generator_properties import (
     BaseSignalProps,
     MACrossoverProps,
+    RSIProps,
 )
 from signal_generator.signals.signal_ma_crossover import SignalMACrossover
+from signal_generator.signals.signal_rsi_mr import SignalRSI
 
 
 class SignalGenerator(ISignalGenerator):
@@ -38,13 +40,20 @@ class SignalGenerator(ISignalGenerator):
 
         Returns:
             ISignalGenerator: _description_
+
+        Raises:
+            ValueError: _description_
         """
         if isinstance(signal_props, MACrossoverProps):
             return SignalMACrossover(
                 properties=signal_props,
             )
-        else:
-            raise ValueError(f"ERROR: props type not supported: {signal_props}")
+        if isinstance(signal_props, RSIProps):
+            return SignalRSI(
+                properties=signal_props,
+            )
+
+        raise ValueError(f"ERROR: props type not supported: {signal_props}")
 
     def generate_signal(  # type: ignore
         self,
