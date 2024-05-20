@@ -121,7 +121,7 @@ class OrderExecutor:
         else:
             # Order was not executed
             print(
-                f"[{Utils.dateprint()}] - ORD EXEC: Error while executing the Pending Order {order_event.signal} for {order_event.symbol}: {result.comment}"
+                f"[{Utils.dateprint()}] - ORD EXEC: Error while executing the Pending Order {order_event.signal} {order_event.target_order} for {order_event.symbol}: {result.comment}"
             )
 
     def close_position_by_ticket(self, ticket: int) -> None:
@@ -130,7 +130,9 @@ class OrderExecutor:
 
         # Verifiy that the position exists
         if position is None:
-            print(f"[{Utils.dateprint()}] - ORD EXEC: Position with ticket {ticket} not found")
+            print(
+                f"[{Utils.dateprint()}] - ORD EXEC: Position with ticket {ticket} not found"
+            )
             return
 
         # Create the trade request to close the position
