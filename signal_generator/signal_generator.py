@@ -15,13 +15,13 @@ from signal_generator.signals.signal_ma_crossover import SignalMACrossover
 class SignalGenerator(ISignalGenerator):
     def __init__(
         self,
-        event_queue: Queue[Any],
+        events_queue: Queue[Any],
         data_provider: DataProvider,
         portfolio: Portfolio,
         order_executor: OrderExecutor,
         signal_properties: BaseSignalProps,
     ):
-        self.events_queue = event_queue
+        self.events_queue = events_queue
         self.data_provider = data_provider
         self.portfolio = portfolio
         self.order_executor = order_executor
