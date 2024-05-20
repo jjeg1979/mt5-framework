@@ -67,7 +67,7 @@ class TradingDirector:
         print(
             f"[{event.data.name}] - DATA EVENT received for symbol: {event.symbol} - Last close price: {event.data.close}"  # type: ignore
         )
-        self.signal_generator.generate_signals(event)
+        self.signal_generator.generate_signal(event)  # type: ignore
 
     def _handle_signal_event(self, event: SignalEvent) -> None:
         """
