@@ -1,4 +1,3 @@
-from datetime import datetime
 import queue
 import time
 from typing import Any, Callable, Dict, Union
@@ -18,6 +17,7 @@ from events.events import (
     SignalEvent,
     SizingEvent,
 )
+from utils.utils import Utils
 
 
 T = Union[DataEvent, SignalEvent]
@@ -57,15 +57,12 @@ class TradingDirector:
             "PENDING": self._handle_pending_order_event,
         }
 
-    def _dateprint(self) -> str:
-        return datetime.now().strftime("%d/%m/%Y %H:%M:%S.%f")[:-3]
-
     def _handle_data_event(self, event: DataEvent) -> None:
         """
         Handle the data event
         """
         print(
-            f"[{event.data.name}] - DATA EVENT received for symbol: {event.symbol} - Last close price: {event.data.close}"  # type: ignore
+            f"[{Utils.dateprint()}] - DATA EVENT received for symbol: {event.symbol} - Last close price: {event.data.close}"  # type: ignore
         )
         self.signal_generator.generate_signal(event)  # type: ignore
 
@@ -74,7 +71,7 @@ class TradingDirector:
         Handle the signal event
         """
         print(
-            f"[{self._dateprint()}] - SIGNAL EVENT received for symbol: {event.symbol} - Signal: {event.signal} - Order: {event.target_order} - Price: {event.target_price}"
+            f"[{Utils.dateprint()}] - SIGNAL EVENT received for symbol: {event.symbol} - Signal: {event.signal} - Order: {event.target_order} - Price: {event.target_price}"
         )
         self.position_sizer.size_signal(event)
 
@@ -83,7 +80,7 @@ class TradingDirector:
         Handle the sizing event
         """
         print(
-            f"[{self._dateprint()}] - SIZING EVENT received with volume {event.volume:.2f} for symbol: {event.symbol}"  # type: ignore
+            f"[{Utils.dateprint()}] - SIZING EVENT received with volume {event.volume:.2f} for symbol: {event.symbol}"  # type: ignore
         )
         self.risk_manager.assess_order(event)
 
@@ -92,7 +89,7 @@ class TradingDirector:
         Handle the order event
         """
         print(
-            f"[{self._dateprint()}] - ORDER EVENT for {event.signal} with volume {event.volume:.2f} for symbol: {event.symbol}"
+            f"[{Utils.dateprint()}] - ORDER EVENT for {event.signal} with volume {event.volume:.2f} for symbol: {event.symbol}"
         )
         self.order_executor.execute_order(event)
 
@@ -103,7 +100,7 @@ class TradingDirector:
             event (ExecutionEvent): _description_
         """
         print(
-            f"[{self._dateprint()}] - Received EXECUTION EVENT for {event.signal} on {event.symbol} with volume {event.volume} at price {event.fill_price}"
+            f"[{Utils.dateprint()}] - Received EXECUTION EVENT for {event.signal} on {event.symbol} with volume {event.volume} at price {event.fill_price}"
         )
         self._process_execution_or_pending_events(event)
 
@@ -114,7 +111,7 @@ class TradingDirector:
             event (PlacePendingOrderEvent): _description_
         """
         print(
-            f"[{self._dateprint()}] - Received PLACED PENDING ORDER EVENT with volume {event.volume} for {event.signal} {event.target_order} on {event.symbol} at price {event.target_price}"
+            f"[{Utils.dateprint()}] - Received PLACED PENDING ORDER EVENT with volume {event.volume} for {event.signal} {event.target_order} on {event.symbol} at price {event.target_price}"
         )
         self._process_execution_or_pending_events(event)
 
