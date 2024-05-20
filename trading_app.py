@@ -1,11 +1,16 @@
 from decimal import Decimal
-from decouple import config
 from queue import Queue
 from typing import Any
 
+from decouple import config
+
+from data_provider.data_provider import DataProvider
+from notifications.notifications import (
+    NotificationService,
+    TelegramNotificationProperties,
+)
 from order_executor.order_executor import OrderExecutor
 from platform_connector.platform_connector import PlatformConnector
-from data_provider.data_provider import DataProvider
 from portfolio.portfolio import Portfolio
 from position_sizer.position_sizer import PositionSizer
 from position_sizer.properties.position_sizer_properties import (
@@ -13,15 +18,12 @@ from position_sizer.properties.position_sizer_properties import (
     # MinSizingProps,
 )
 
+
 from risk_manager.properties.risk_manager_properties import MaxLeverageFactorRiskProps
 from risk_manager.risk_manager import RiskManager
+from signal_generator.properties.signal_generator_properties import MACrossoverProps
+from signal_generator.signal_generator import SignalGenerator
 from trading_director.trading_director import TradingDirector
-
-from signal_generator.signals.signal_ma_crossover import SignalMACrossover
-from notifications.notifications import (
-    NotificationService,
-    TelegramNotificationProperties,
-)
 
 
 def main() -> None:
@@ -59,14 +61,16 @@ def main() -> None:
     portfolio = Portfolio(magic_number=magic_number)
     order_executor = OrderExecutor(events_queue=events_queue, portfolio=portfolio)
 
-    signal_generator = SignalMACrossover(
+    signal_generator = SignalGenerator(
         events_queue=events_queue,
         data_provider=data_provider,
         portfolio=portfolio,
         order_executor=order_executor,
-        timeframe=timeframe,
-        fast_period=fast_ma_pd,
-        slow_period=slow_ma_pd,
+        signal_properties=MACrossoverProps(
+            timeframe=timeframe,
+            fast_period=fast_ma_pd,
+            slow_period=slow_ma_pd,
+        ),
     )
 
     sizing_properties = FixedSizingProps(volume=Decimal(1.0))
