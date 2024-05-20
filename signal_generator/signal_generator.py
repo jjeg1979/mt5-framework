@@ -3,7 +3,6 @@ from typing import Any
 from data_provider.data_provider import DataProvider
 from events.events import DataEvent
 from order_executor.order_executor import OrderExecutor
-import portfolio
 from portfolio.portfolio import Portfolio
 from signal_generator.interfaces.signal_generator_interface import ISignalGenerator
 from signal_generator.properties.signal_generator_properties import (
@@ -47,7 +46,7 @@ class SignalGenerator(ISignalGenerator):
         else:
             raise ValueError(f"ERROR: props type not supported: {signal_props}")
 
-    def generate_signal(
+    def generate_signal(  # type: ignore
         self,
         data_event: DataEvent,
     ) -> None:
@@ -58,7 +57,7 @@ class SignalGenerator(ISignalGenerator):
 
         """
         # Retrieve el SignalEvent using the adequate entry logic
-        signal_event = self.signal_generator_method.generate_signal(
+        signal_event = self.signal_generator_method.generate_signal(  # noqa: E1111
             data_event=data_event,
             data_provider=self.data_provider,
             portfolio=self.portfolio,
