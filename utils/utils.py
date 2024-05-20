@@ -14,6 +14,9 @@ class Utils:
     def convert_currency_amount_to_another_currency(
         amount: Decimal, from_currency: str, to_currency: str
     ) -> Decimal:
+        if from_currency == to_currency:
+            return amount
+
         all_fx_symbol = (
             "AUDCAD",
             "AUDCHF",
